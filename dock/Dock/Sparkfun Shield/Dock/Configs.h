@@ -5,8 +5,8 @@
 #define Configs_h
 
 // Temp Vars
-extern int fakeLockerLedPin = 6;
-extern int fakeLockerButtonPin = 5;
+extern int lockerRelayPin = 6;
+extern int lockerButtonPin = 5;
 
 extern String LOCKER_NAME = "16";
 // Topics to Subscribe
@@ -21,10 +21,11 @@ extern String LOCKER_NAME = "16";
 #define IDLE_MODE "IDLE_MODE"
 
 // Hardware
-#define numberOfDevices 1
-extern const int ledsPins[16] = { 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37 };
+#define numberOfDevices 16
+extern const int ledsPins[16] = { 22, 24, 26, 28, 30, 32, 34, 36, 23, 25, 27, 29, 31, 33, 35, 37 };
 extern const int sensorPins[16] = { A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15  };
 extern boolean dockIsOcupied[16] = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
+extern boolean waitingDoorToOpen = false;
 
 // WiFi configs
 #define CC3000_INT      2   // Needs to be an interrupt pin (D2/D3)

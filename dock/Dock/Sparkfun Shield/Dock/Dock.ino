@@ -20,7 +20,7 @@ PubSubClient pubSubClient(wifiClient);
 Bounce debouncer = Bounce();
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115000);
   Serial.println("Starting the board");
   initializePins();
   connectToWiFi();
@@ -40,6 +40,7 @@ void loop() {
 
 void processDockStatus() {
   if (currentMode != IDLE_MODE) {
+          Serial.println();
     for (int i = 0; i < numberOfDevices; i++) {
       boolean lastReading = checkIfDockIsOcupied(sensorPins[i]);
       delay(10);
@@ -61,11 +62,15 @@ void processDockStatus() {
       }
     }
   }
-
-  boolean buttonPressed = !digitalRead(fakeLockerButtonPin);
-  if (currentMode == PICKING_MODE && buttonPressed) {
-    doorClosed();
-    currentMode = IDLE_MODE;
+  boolean buttonPressed = !digitalRead(lockerButtonPin);
+  if(currentMode == PICKING_MODE ){
+    if(waitingDoorToOpen == true){
+      if(buttonPressed)
+      waitingDoorToOpen = false;
+    }else if(buttonPressed){
+      doorClosed();
+      currentMode = IDLE_MODE;   
+    }
   }
 }
 
@@ -98,7 +103,8 @@ void startPickingAndReturning(byte* message, unsigned int length) {
 }
 
 void openTheDoor() {
-  digitalWrite(fakeLockerLedPin, HIGH);
+  // Turn on the Relay -- LOW state
+  digitalWrite(lockerRelayPin, LOW);
   for (int j = 0; j < numberOfDevices; j++) {
     if (checkIfDockIsOcupied(sensorPins[j])) {
       dockIsOcupied[j] = true;
@@ -107,11 +113,13 @@ void openTheDoor() {
     }
     fadeOut(ledsPins[j]);
   }
-  Serial.println("Door Opened");
+  waitingDoorToOpen = true;
+  Serial.println("Waiting user to open de door");
 }
 
 void doorClosed() {
-  digitalWrite(fakeLockerLedPin, LOW);
+  // Turn on the Relay -- HIGH state  
+  digitalWrite(lockerRelayPin, HIGH);
   Serial.println("Door Closed");
   for (int i = 0; i < numberOfDevices; i++) {
     fadeIn(ledsPins[i]);
@@ -187,7 +195,9 @@ boolean checkIfDockIsOcupied(int pin) {
   delay(5);                // let the ADC stabilize
   value = analogRead(pin);      // toss the first reading and take one we will keep
   delay(1);                // delay again to be friendly to future readings
-  Serial.println(value);
+  Serial.print(value);
+    Serial.print(" - ");
+  delay(15);
   return value > 800 ? true : false;
 }
 
@@ -197,15 +207,17 @@ void initializePins() {
     SoftPWMSet(ledsPins[i], 0);
     SoftPWMSetFadeTime(ledsPins[i], 1000, 1000);
     pinMode(sensorPins[i], INPUT);
+    delay(10);
     dockIsOcupied[i] = checkIfDockIsOcupied(sensorPins[i]);
   }
-  pinMode(fakeLockerLedPin, OUTPUT);
-  pinMode(fakeLockerButtonPin, INPUT_PULLUP);
+  pinMode(lockerRelayPin, OUTPUT);
+  digitalWrite(lockerRelayPin, HIGH);
+  pinMode(lockerButtonPin, INPUT_PULLUP);
 
 }
 
 void initializeLockerSensor() {
-  debouncer.attach(fakeLockerButtonPin);
+  debouncer.attach(lockerButtonPin);
   debouncer.interval(100);
 }
 
