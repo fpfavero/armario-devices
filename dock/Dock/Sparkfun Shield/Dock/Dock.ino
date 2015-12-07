@@ -65,8 +65,10 @@ void processDockStatus() {
   boolean buttonPressed = !digitalRead(lockerButtonPin);
   if(currentMode == PICKING_MODE ){
     if(waitingDoorToOpen == true){
-      if(buttonPressed)
-      waitingDoorToOpen = false;
+      if(!buttonPressed){
+        waitingDoorToOpen = false;
+        Serial.println("Door Opened");
+      }
     }else if(buttonPressed){
       doorClosed();
       currentMode = IDLE_MODE;   
@@ -90,14 +92,25 @@ void processDockStatus() {
 
 void startPickingAndReturning(byte* message, unsigned int length) {
   openTheDoor();
-//  TO-DO: Interpretar o "message" para transformar em um array de numeros de docks.
-//         Da forma que esta soh funciona de zero a nove.
-
+  char separator = ',';
+  String number = "";
   //Acende os leds que o usuario possui devices em uso
   for (int i = 0; i < length; i++) {
     char currentChar = (char)message[i];
-    if (currentChar != ',') {
-      fadeIn(ledsPins[int(currentChar) - '0']);
+    if (currentChar != separator) {
+      number += currentChar;
+    }else{
+      if(number != ""){
+        fadeIn(ledsPins[number.toInt()]);
+        number = "";
+      }
+    }
+    // if it is the last digit, force the execution
+    if(i == (length-1)){
+        if(number != ""){
+          fadeIn(ledsPins[number.toInt()]);
+          number = "";
+      }
     }
   }
 }
@@ -106,15 +119,19 @@ void openTheDoor() {
   // Turn on the Relay -- LOW state
   digitalWrite(lockerRelayPin, LOW);
   for (int j = 0; j < numberOfDevices; j++) {
+    fadeOut(ledsPins[j]);
+    delay(PWMEffectInterval);
+  }
+  for (int j = 0; j < numberOfDevices; j++) {
     if (checkIfDockIsOcupied(sensorPins[j])) {
       dockIsOcupied[j] = true;
     } else {
       dockIsOcupied[j] = false;
     }
-    fadeOut(ledsPins[j]);
+    
   }
   waitingDoorToOpen = true;
-  Serial.println("Waiting user to open de door");
+  Serial.println("Waiting user to open the door");
 }
 
 void doorClosed() {
@@ -123,6 +140,7 @@ void doorClosed() {
   Serial.println("Door Closed");
   for (int i = 0; i < numberOfDevices; i++) {
     fadeIn(ledsPins[i]);
+     delay(PWMEffectInterval);
   }
   pubSubClient.publish(DISPLAY_CLOSED_TOPIC, "");
 }
@@ -163,6 +181,7 @@ void reconnect() {
       Serial.println("connected");
       for (int i = 0; i < numberOfDevices; i++) {
         fadeIn(ledsPins[i]);
+        delay(PWMEffectInterval);
       }
       subscribeTopics();
     } else {
@@ -177,9 +196,11 @@ void reconnect() {
 
 void callback(char* topic, byte* payload, unsigned int length) {
   char* message;
-  currentMode = PICKING_MODE;
-  startPickingAndReturning(payload, length);
-  Serial.println("Picking Mode");
+  if(currentMode != PICKING_MODE){
+    currentMode = PICKING_MODE;
+    startPickingAndReturning(payload, length);
+    Serial.println("Picking Mode");
+  }
 }
 
 void subscribeTopics() {
@@ -198,7 +219,7 @@ boolean checkIfDockIsOcupied(int pin) {
   Serial.print(value);
     Serial.print(" - ");
   delay(15);
-  return value > 800 ? true : false;
+  return value > SensorReadingThreshold ? true : false;
 }
 
 void initializePins() {
@@ -206,6 +227,7 @@ void initializePins() {
   for (int i = 0; i < numberOfDevices; i++) {
     SoftPWMSet(ledsPins[i], 0);
     SoftPWMSetFadeTime(ledsPins[i], 1000, 1000);
+    //pinMode(ledsPins[i], OUTPUT);
     pinMode(sensorPins[i], INPUT);
     delay(10);
     dockIsOcupied[i] = checkIfDockIsOcupied(sensorPins[i]);
@@ -223,11 +245,15 @@ void initializeLockerSensor() {
 
 
 void fadeIn(int port) {
-    SoftPWMSetPercent(port, 255);
+    // PWM disabled 
+    SoftPWMSetPercent(port, PWMMaxValue);
+    //digitalWrite(port, HIGH);
 }
 
 void fadeOut(int port) {
+    // PWM disabled 
     SoftPWMSetPercent(port, 0);
+    //digitalWrite(port, LOW);
 }
 
 // ----------------------- Utils ----------------------
