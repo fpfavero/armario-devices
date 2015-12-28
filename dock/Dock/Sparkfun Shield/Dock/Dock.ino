@@ -76,20 +76,6 @@ void processDockStatus() {
   }
 }
 
-//void startPicking(){
-//  // open the Door
-//  openTheDoor();
-//   // Turn on all availables devices
-//   for(int i = 0; i < numberOfDevices; i++){
-//     if(checkIfDockIsOcupied(sensorPins[i])){
-//       dockIsOcupied[i] = true;
-//     }else{
-//       dockIsOcupied[i] = false;
-//     }
-//     fadeOut(ledsPins[i]);
-//   }
-//}
-
 void startPickingAndReturning(byte* message, unsigned int length) {
   openTheDoor();
   char separator = ',';
@@ -173,8 +159,8 @@ void checkPubSub() {
 
 
 void reconnect() {
-  // Loop until we're reconnected
-  while (!pubSubClient.connected()) {
+  // Check if we're reconnected
+  if (!pubSubClient.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
     if (pubSubClient.connect("arduinoClient")) {
@@ -188,8 +174,6 @@ void reconnect() {
       Serial.print("failed, rc=");
       Serial.print(pubSubClient.state());
       Serial.println(" try again in 5 seconds");
-      // Wait 5 seconds before retrying
-      delay(5000);
     }
   }
 }
