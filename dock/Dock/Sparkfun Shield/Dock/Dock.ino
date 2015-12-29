@@ -1,9 +1,9 @@
 #include <SPI.h>
 #include <SFE_CC3000.h>
 #include <SFE_CC3000_Client.h>
+#include <SoftPWM.h> //https://github.com/bhagman/SoftPWM
 #include <PubSubClient.h>
 #include <Bounce2.h>
-#include <SoftPWM.h>
 #include "Configs.h"
 
 String currentMode = IDLE_MODE;
