@@ -10,11 +10,11 @@ extern int lockerButtonPin = 5;
 
 extern String LOCKER_NAME = "16";
 // Topics to Subscribe
-#define OPEN_DISPLAY_TOPIC "thegarage.ciandt.com/think.devices/16/open_display"
+#define OPEN_DISPLAY_TOPIC "xxxxxxx/<#diplay>/open_display"
 // Topics to Publish
-#define  DISPLAY_CLOSED_TOPIC "thegarage.ciandt.com/think.devices/16/display_closed"
-#define  DEVICE_PICKED_TOPIC "thegarage.ciandt.com/think.devices/16/device_picked"
-#define  DEVICE_RETURNED_TOPIC  "thegarage.ciandt.com/think.devices/16/device_returned"
+#define  DISPLAY_CLOSED_TOPIC "xxxxxxx/<#diplay>/display_closed"
+#define  DEVICE_PICKED_TOPIC "xxxxxxx/<#diplay>/device_picked"
+#define  DEVICE_RETURNED_TOPIC  "xxxxxxx/<#diplay>/device_returned"
 
 // Modes
 #define PICKING_MODE "PICKING_MODE"
