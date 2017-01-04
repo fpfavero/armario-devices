@@ -10,11 +10,11 @@ extern int lockerButtonPin = 5;
 
 extern String LOCKER_NAME = "16";
 // Topics to Subscribe
-#define OPEN_DISPLAY_TOPIC "thegarage.ciandt.com/think.devices/16/open_display"
+#define OPEN_DISPLAY_TOPIC "xxxxxxx/<#diplay>/open_display"
 // Topics to Publish
-#define  DISPLAY_CLOSED_TOPIC "thegarage.ciandt.com/think.devices/16/display_closed"
-#define  DEVICE_PICKED_TOPIC "thegarage.ciandt.com/think.devices/16/device_picked"
-#define  DEVICE_RETURNED_TOPIC  "thegarage.ciandt.com/think.devices/16/device_returned"
+#define  DISPLAY_CLOSED_TOPIC "xxxxxxx/<#diplay>/display_closed"
+#define  DEVICE_PICKED_TOPIC "xxxxxxx/<#diplay>/device_picked"
+#define  DEVICE_RETURNED_TOPIC  "xxxxxxx/<#diplay>/device_returned"
 
 // Modes
 #define PICKING_MODE "PICKING_MODE"
@@ -36,8 +36,8 @@ extern boolean waitingDoorToOpen = false;
 #define CC3000_CS       10  // Preferred is pin 10 on Uno
 #define IP_ADDR_LEN     4   // Length of IP address in bytes
 
-extern char ap_ssid[] = "IOT";                  // SSID of network
-extern char ap_password[] = "INTERNETOFTHINGS";          // Password of network
+extern char ap_ssid[] = “<ssid>“;                  // SSID of network
+extern char ap_password[] = “<pwd>“;          // Password of network
 extern unsigned int ap_security = WLAN_SEC_WPA2; // Security of network
 extern unsigned int timeout = 30000;             // Milliseconds
 
