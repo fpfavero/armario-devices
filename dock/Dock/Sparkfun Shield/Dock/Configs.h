@@ -36,8 +36,8 @@ extern boolean waitingDoorToOpen = false;
 #define CC3000_CS       10  // Preferred is pin 10 on Uno
 #define IP_ADDR_LEN     4   // Length of IP address in bytes
 
-extern char ap_ssid[] = "IOT";                  // SSID of network
-extern char ap_password[] = "INTERNETOFTHINGS";          // Password of network
+extern char ap_ssid[] = “<ssid>“;                  // SSID of network
+extern char ap_password[] = “<pwd>“;          // Password of network
 extern unsigned int ap_security = WLAN_SEC_WPA2; // Security of network
 extern unsigned int timeout = 30000;             // Milliseconds
 
